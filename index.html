@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+	<title>SMI Demo</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="snap.svg.js"></script>
+</head>
+<body>
+	<div id="header">
+		<div id="shadownet">
+			SHADOW<span>NET</span>
+		</div>
+		<h1 id="current-status">The Engineers have accelerated the timeline</h1>
+		<div id="assets">
+			<div id="cash">
+				<span>$</span>
+				<span id="cash-amount">872920</span>
+			</div>
+			<div id="points">
+				<span id="symbol">&loz;</span>
+				<span id="points-amount">11</span>
+			</div>
+		</div>
+	</div>
+	<svg id="map">
+		<g id="world-map"></g>
+	</svg>
+
+	<script type="text/javascript">
+		Array.prototype.random = function(member) {
+		  return this[Math.floor(Math.random()*this.length)];
+		}
+	</script>
+
+	<script type="text/javascript">
+		//setup our map canvas and "world map" (group for countries)
+		var map_canvas = Snap("#map");
+		var world_map = map_canvas.select("#world-map");
+		var current_locations = [];
+		var card_template;
+
+
+		//load in our world map, add the countries to their group, set color to black
+		Snap.load("world-map3.svg", function(file){
+			var countries = file.select("#gCountries");
+			world_map.append(countries);
+			world_map.attr({fill :"#5C877E"});
+
+			//scale our world map group to take up the size of its parent (width-oriented)
+			var parent_width = map_canvas.node.parentElement.clientWidth;
+			var world_map_width = world_map.node.getBBox().width;
+
+			var scaleratio = parent_width/world_map_width;
+
+			world_map.attr({transform: "s"+ scaleratio +",,0,0"});
+			create_missions();
+		});
+
+		//load a random number (and random types) of mission badges
+		function create_missions(){
+			Snap.load("mission.svg", function(file){
+				card_template = file.select(".mission");
+				for (var i = 0; i < 4; i++) {
+					create_mission();
+				}
+			})
+		}
+
+		function create_mission(){
+			var mission_details = generate_mission_information();
+			//make sure we don't try to create two missions in the same place
+			var tries = 0;
+			while(!is_location_free(mission_details.location.name) && tries <= mission_locations.length){
+				generate_mission_information();
+				tries++;
+			}
+			//don't create a mission if there aren't any places left!
+			if(tries >= mission_locations.length){
+				return;
+			}
+
+			current_locations.push(mission_details.location.name);
+
+			mission_card = card_template.clone();
+			//change the color of the mission badge
+			mission_card.select(".badge-color").attr({fill: mission_details.badge_color});
+
+			//change the text for the mission card
+			mission_card.select(".mission-type").node.innerHTML = mission_details.type;
+			mission_card.select(".mission-location").node.innerHTML = mission_details.location.name;
+			mission_card.select(".mission-name").node.innerHTML = mission_details.name;
+
+			map_canvas.append(mission_card);
+
+			move_mission_card_to_coordinates(mission_card, mission_details.location.coordinates[0], mission_details.location.coordinates[1])
+
+			hide_mission_details_and_scale_down_mission_badge(mission_card);
+
+			mission_card.select(".mission-badge").hover(
+				function(){
+					this.animate({transform: "t0,0s1"}, 200, mina.backin);
+					this.parent().select(".mission-details").animate({transform: "s1,1"}, 200, mina.fadein)
+				},
+				function(){
+					this.animate({transform: "t0,0s0.5"}, 200, mina.backin);
+					this.parent().select(".mission-details").animate({transform: "s1,0"}, 200, mina.fadein)
+				}
+			)
+
+		}
+
+		function hide_mission_details_and_scale_down_mission_badge(mission_card){
+			mission_card.select(".mission-details").attr({transform:"s0,0"})
+			mission_card.select(".mission-badge").attr({transform: "s0.5"});
+		}
+
+		//move the mission badge to the proper location on the map
+		function move_mission_card_to_coordinates(mission_card, normalized_x, normalized_y){
+			var map_width = world_map.getBBox().width;
+			var map_height = world_map.getBBox().height;
+			var map_absolute_x_coordinate = (normalized_x * map_width) - 25
+			var map_absolute_y_coordinate = (normalized_y * map_height) - 25
+			var map_relative_x_coordinates = mission_card.getBBox().x
+			var map_relative_y_coordinates = mission_card.getBBox().y
+
+			var map_x_transformation = map_absolute_x_coordinate - map_relative_x_coordinates;
+
+			var map_y_transformation = map_absolute_y_coordinate - map_relative_y_coordinates;
+
+			mission_card.attr({transform: "t"+ map_x_transformation +"," + map_y_transformation});
+
+		}
+
+		var badge_colors = ["#FE8601", "#09DCB6", "#D10926"]
+		//coordinates are stored as normalized (x,y) coordinates
+		//multiply them by the maps height and width and you're
+		//good to go!
+		var mission_locations = [
+			{
+				name: "New York, NY",
+				coordinates: [0.265880218,0.274805006]
+			},
+			{
+				name: "San Fransico, CA",
+				coordinates: [0.136025408,0.291130056]
+			},
+			{
+				name: "Mexico City",
+				coordinates: [0.19600726,0.391801197]
+			},
+			{
+				name: "Tehran, Iran",
+				coordinates: [0.616243194,0.304734264]
+			},
+			{
+				name: "London",
+				coordinates: [0.471869328,0.21494649]
+			},
+			{
+				name: "Johannesburg",
+				coordinates: [0.551724138,0.642118629]
+			}
+		]
+
+		var mission_types = ["Gone Dark", "Rogue Agent", "Asset Retrieval", "Dead Drop"]
+
+		var mission_first_names = ["Banished","Black","Bleeding","Blind","Blinding","Bloody","Broken","Brutal","Burning","Cold","Crimson","Cryptic","Crystal","Dark","Defiant","Demon","Devil's","Driving","Dying","Empty","Enduring","Fading","Fallen","Final","First","Flying","Forgotten","Frozen","Glass","Hidden","Hot","Lazy","Lone","Lost","Morbid","Patient","Purple","Red","Rotting","Sacred","Secret","Severed","Shattered","Silent","Soaring","Spectral","Stone","Swift","Twisted","Unceasing","Vengeful"]
+
+		var mission_last_names = ["Apollo","Bell","Blade","Breath","Calm","Crone","Crown","Daze","Dream","Druid","Empire","Engine","Fall","Father","Fear","Fog","Future","Grave","God","Hammer","Hawk","Hydra","Hymn","Jester","Justice","King","Line","Law","Moon","Mother","Night","Palace","Paramour","Pipe","Priest","Prophet","Pyre","Rain","Ring","Savior","Scepter","Serpent","Shield","Shroud","Skull","Smoke","Stallion","Star","Stranger","Stroke","Summer","Sword","Tears","Thorn","Throne","Thunder","Vanguard","Whisper"]
+
+		function generate_mission_information(){
+			return {
+				badge_color: badge_colors.random(),
+				location: mission_locations.random(),
+				type: mission_types.random(),
+				name: mission_first_names.random() + " " + mission_last_names.random()
+			}
+		}
+
+		function is_location_free(location_name){
+			return current_locations.indexOf(location_name) < 0;
+		}
+	</script>
+</body>
+</html>

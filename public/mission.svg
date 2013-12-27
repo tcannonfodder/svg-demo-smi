@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="layer" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="208px" height="80px" viewBox="323 282.5 208 80" enable-background="new 323 282.5 208 80" xml:space="preserve">
+<g class="mission">
+	<g class="mission-badge">
+		<g>
+			<g>
+				<polygon class="badge-color" fill="#FE8601" points="363.045,296.25 387.294,310.25 387.294,338.25 363.045,352.25 
+					338.796,338.25 338.796,310.25 			"/>
+				<polygon fill="none" stroke="#000000" stroke-width="5.25" points="363.124,306.399 378.583,315.326 
+					378.583,333.174 363.124,342.099 347.664,333.174 347.664,315.326 			"/>
+			</g>
+		</g>
+	</g>
+	<g class="mission-details">
+		<rect x="394.5" y="295" fill="rgba(46,88,78,0.9)" width="185" height="19.75"/>
+		<rect id="title_1_" x="394.5" y="314" fill="rgba(19,35,31,0.95)" width="185" height="38.25"/>
+		<text class="mission-type" transform="matrix(1 0 0 1 397.25 311.75)" fill="#79CEBA" font-family="'NewsGothicMT'" font-size="18">Mission Type</text>
+		<text class="mission-location" transform="matrix(1 0 0 1 397.25 329)" fill="#FFFFFF" font-family="'NewsGothicMT'" font-size="15">Location</text>
+		<text class="mission-name" transform="matrix(1 0 0 1 397.25 349)" fill="#FFFFFF" font-family="'NewsGothicMT'" font-size="15">Mission Name</text>
+	</g>
+</g>
+</svg>
